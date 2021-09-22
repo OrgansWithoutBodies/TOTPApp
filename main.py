@@ -9,6 +9,7 @@ PINE_SCREEN_HEI = 1440
 FAC = 0.5
 
 BG_COLOR= "#222222"
+BUTTON_BG_COLOR= "#333333"
 FONT_COLOR_PRIMARY= "#cccccc"
 
 class Code():
@@ -33,7 +34,7 @@ class CodeDial():
         self.widget.setFixedHeight(200)
         self.widget.setFixedWidth(50)
         self.widget.setFont(QFont('Arial', 20))
-        self.widget.setStyleSheet("border-radius: 10px;border: 2px solid {0}; background-color: {1}; color:{0};".format(FONT_COLOR_PRIMARY,BG_COLOR))
+        self.widget.setStyleSheet("border-radius: 10px;border: 2px solid {0}; background-color: {1}; color:{0};".format(FONT_COLOR_PRIMARY,BUTTON_BG_COLOR))
     def setText(self,code):
         self.widget.setText(code)
 def get_code():
@@ -53,16 +54,26 @@ def run_app(window):
     
     parentLayout=QVBoxLayout() 
     parentLayout.addLayout(pinLayout)
-    mfarcBtn=QPushButton("SET MFARC")
+#    mfarcBtn=QPushButton("SET MFARC")
+    codes=["OKTA","AWS","BAMBOO"]
+    chooseSourceBtn=QComboBox()
+    chooseSourceBtn.addItems(codes)
+    chooseSourceBtn.setStyleSheet("color: {0};".format(FONT_COLOR_PRIMARY))
     newCodeBtn=QPushButton("GET NEW CODE")
+    newCodeBtn.setStyleSheet("border-radius: 7px;border: 2px solid {0}; background-color: {1}; color:{0};".format(FONT_COLOR_PRIMARY,BUTTON_BG_COLOR))
+    newCodeBtn.setFixedHeight(40)
     newCodeBtn.clicked.connect(lambda: CODE.set_random_code())
-    parentLayout.addWidget(newCodeBtn)
+    buttonLayout=QVBoxLayout()
+    buttonLayout.addWidget(chooseSourceBtn)
+    buttonLayout.addWidget(newCodeBtn)
+    parentLayout.addLayout(buttonLayout)
     window.setLayout(parentLayout)
     window.show()
 
 
 app = QApplication(sys.argv)
 window = QWidget()
+window.setStyleSheet("background-color:{0};".format(BG_COLOR))
 #window.setGeometry()
 window.setFixedHeight(FAC*PINE_SCREEN_HEI)
 window.setFixedWidth(FAC*PINE_SCREEN_WID)
