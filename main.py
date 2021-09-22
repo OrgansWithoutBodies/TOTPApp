@@ -1,7 +1,8 @@
 import sys
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont,QIcon
 import random 
+import os
 
 PINE_SCREEN_WID = 720
 PINE_SCREEN_HEI = 1440
@@ -23,11 +24,13 @@ class Code():
             self.buttons[bb].setText(str(code[bb]))
             
         #Todo something to acknowledge
-    def set_random_code(self):
+    def set_random_code(self,source):
         btns=self.buttons
 
         code=[random.randint(0,9) for cc in range(6)]
         self.set_code(code)    
+        sourceIndex=source.currentIndex()
+        
 class CodeDial():
     def __init__(self):
         self.widget=QPushButton('*')
@@ -55,14 +58,24 @@ def run_app(window):
     parentLayout=QVBoxLayout() 
     parentLayout.addLayout(pinLayout)
 #    mfarcBtn=QPushButton("SET MFARC")
-    codes=["OKTA","AWS","BAMBOO"]
+    currentdir=os.getcwd()
+    codes={"OKTA":{"logo":"/logos/oktalogo.png"},
+           "AWS":{"logo":"/logos/awslogo.png"},
+           "BAMBOO":{"logo":"/logos/bamboologo.png"}}
     chooseSourceBtn=QComboBox()
-    chooseSourceBtn.addItems(codes)
+    ii=0
+    for cc in codes.keys():
+        
+        icn=QIcon(currentdir+codes[cc]['logo'])
+        
+        chooseSourceBtn.addItem(cc)
+        chooseSourceBtn.setItemIcon(ii,icn)
+        ii=ii+1
     chooseSourceBtn.setStyleSheet("color: {0};".format(FONT_COLOR_PRIMARY))
     newCodeBtn=QPushButton("GET NEW CODE")
     newCodeBtn.setStyleSheet("border-radius: 7px;border: 2px solid {0}; background-color: {1}; color:{0};".format(FONT_COLOR_PRIMARY,BUTTON_BG_COLOR))
     newCodeBtn.setFixedHeight(40)
-    newCodeBtn.clicked.connect(lambda: CODE.set_random_code())
+    newCodeBtn.clicked.connect(lambda: CODE.set_random_code(chooseSourceBtn))
     buttonLayout=QVBoxLayout()
     buttonLayout.addWidget(chooseSourceBtn)
     buttonLayout.addWidget(newCodeBtn)
