@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QFont,QIcon
 import random 
 import os
+import subprocess
 
 PINE_SCREEN_WID = 720
 PINE_SCREEN_HEI = 1440
@@ -13,6 +14,14 @@ BG_COLOR= "#222222"
 BUTTON_BG_COLOR= "#333333"
 FONT_COLOR_PRIMARY= "#cccccc"
 
+def getCodeForMFA(mfa):
+    command='oathtool --base32 --totp {0}'.format("PLACEHOLDERADDRESS")
+    test=subprocess.Popen(command.split(),stdout=subprocess.PIPE)    
+    out,error=test.communicate()
+    if error is None:
+        code=out.decode('utf-8').strip("'").split('\n')[0]
+        print(code)
+        return [*code]
 class Code():
     def __init__(self,buttons):
         self.set_buttons(buttons)
@@ -25,12 +34,13 @@ class Code():
             
         #Todo something to acknowledge
     def set_random_code(self,source):
-        btns=self.buttons
-
-        code=[random.randint(0,9) for cc in range(6)]
-        self.set_code(code)    
+#        code=[random.randint(0,9) for cc in range(6)]
         sourceIndex=source.currentIndex()
+        code=getCodeForMFA(sourceIndex)
+        self.set_code(code)    
         
+    def get_code_then_set(self):
+        pass
 class CodeDial():
     def __init__(self):
         self.widget=QPushButton('*')
