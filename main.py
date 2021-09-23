@@ -13,7 +13,10 @@ FAC = 0.5
 BG_COLOR= "#222222"
 BUTTON_BG_COLOR= "#333333"
 FONT_COLOR_PRIMARY= "#cccccc"
-
+MFACODES={"OKT":{"logo":"/logos/oktalogo.png"},
+       "AWS":{"logo":"/logos/awslogo.png"},
+       "BHR":{"logo":"/logos/bamboologo.png"}}
+    
 def getCodeForMFA(mfa):
     command='oathtool --base32 --totp {0}'.format("PLACEHOLDERADDRESS")
     test=subprocess.Popen(command.split(),stdout=subprocess.PIPE)    
@@ -55,7 +58,7 @@ def get_code():
 def run_get_code():
     pass
 
-def run_app(window):
+def run_app(window,mfa):
     
     pinLayout=QHBoxLayout()
     pinButtons=[]
@@ -69,17 +72,13 @@ def run_app(window):
     parentLayout.addLayout(pinLayout)
 #    mfarcBtn=QPushButton("SET MFARC")
     currentdir=os.getcwd()
-    codes={"OKTA":{"logo":"/logos/oktalogo.png"},
-           "AWS":{"logo":"/logos/awslogo.png"},
-           "BAMBOO":{"logo":"/logos/bamboologo.png"}}
     chooseSourceBtn=QComboBox()
     ii=0
-    for cc in codes.keys():
-        
-        icn=QIcon(currentdir+codes[cc]['logo'])
-        
+    for cc in mfa.keys():
         chooseSourceBtn.addItem(cc)
-        chooseSourceBtn.setItemIcon(ii,icn)
+        if cc in MFACODES.keys():
+            icn=QIcon(currentdir+MFACODES[cc]['logo'])        
+            chooseSourceBtn.setItemIcon(ii,icn)
         ii=ii+1
     chooseSourceBtn.setStyleSheet("color: {0};".format(FONT_COLOR_PRIMARY))
     newCodeBtn=QPushButton("GET NEW CODE")
@@ -93,12 +92,31 @@ def run_app(window):
     window.setLayout(parentLayout)
     window.show()
 
+def STARTAPP(mfa):  
+    app = QApplication(sys.argv)
+    window = QWidget()
+    window.setStyleSheet("background-color:{0};".format(BG_COLOR))
+    #window.setGeometry()
+    window.setFixedHeight(FAC*PINE_SCREEN_HEI)
+    window.setFixedWidth(FAC*PINE_SCREEN_WID)
+    run_app(window,mfa)
+    app.exec_()
 
-app = QApplication(sys.argv)
-window = QWidget()
-window.setStyleSheet("background-color:{0};".format(BG_COLOR))
-#window.setGeometry()
-window.setFixedHeight(FAC*PINE_SCREEN_HEI)
-window.setFixedWidth(FAC*PINE_SCREEN_WID)
-run_app(window)
-app.exec_()
+
+if __name__ == "__main__":
+    mfarc=sys.argv[1]
+    print(mfarc)
+    mfa=dict()
+    with open(mfarc,'r') as file:
+        for ll in file:
+            
+            vals=ll.split(" ")[1].strip('"').split('=')
+            mfa[vals[0].split('MFA')[0]]=vals[1]
+            
+    
+    STARTAPP(mfa)
+#    for line in mfarc:
+#        print(line)
+#        if line in known:
+#            assign icon
+# TODO add mfarc file as args
