@@ -47,7 +47,7 @@ class CodeDial():
         self.widget=QPushButton('*')
         self.widget.setFixedHeight(200)
         self.widget.setFixedWidth(50)
-        self.widget.setFont(QFont('Arial', 20))
+        self.widget.setFont(QFont('Arial', 30))
         self.widget.setStyleSheet("border-radius: 10px;border: 2px solid {0}; background-color: {1}; color:{0};".format(FONT_COLOR_PRIMARY,BUTTON_BG_COLOR))
     def setText(self,code):
         self.widget.setText(code)
@@ -78,12 +78,16 @@ def run_app(window,mfa):
             icn=QIcon(currentdir+MFACODES[cc]['logo'])        
             chooseSourceBtn.setItemIcon(ii,icn)
         ii=ii+1
+    btnHei=60
     chooseSourceBtn.setStyleSheet("color: {0};".format(FONT_COLOR_PRIMARY))
+    chooseSourceBtn.setFixedHeight(btnHei)
+    chooseSourceBtn.setFixedWidth(int(0.25*FAC*PINE_SCREEN_WID))
     newCodeBtn=QPushButton("GET NEW CODE")
+    newCodeBtn.setFont(QFont('Arial', 19,QFont.Bold))
     newCodeBtn.setStyleSheet("border-radius: 7px;border: 2px solid {0}; background-color: {1}; color:{0};".format(FONT_COLOR_PRIMARY,BUTTON_BG_COLOR))
-    newCodeBtn.setFixedHeight(40)
+    newCodeBtn.setFixedHeight(btnHei)
     newCodeBtn.clicked.connect(lambda: CODE.get_code_then_set(chooseSourceBtn,mfa))
-    buttonLayout=QVBoxLayout()
+    buttonLayout=QHBoxLayout()
     buttonLayout.addWidget(chooseSourceBtn)
     buttonLayout.addWidget(newCodeBtn)
     parentLayout.addLayout(buttonLayout)
