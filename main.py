@@ -14,16 +14,15 @@ BG_COLOR= "#222222"
 BUTTON_BG_COLOR= "#333333"
 FONT_COLOR_PRIMARY= "#cccccc"
 MFACODES={"OKT":{"logo":"/logos/oktalogo.png"},
-       "AWS":{"logo":"/logos/awslogo.png"},
-       "BHR":{"logo":"/logos/bamboologo.png"}}
+          "AWS":{"logo":"/logos/awslogo.png"},
+          "BHR":{"logo":"/logos/bamboologo.png"}}
     
-def getCodeForMFA(mfa):
-    command='oathtool --base32 --totp {0}'.format("PLACEHOLDERADDRESS")
+def getCodeForMFA(mfacode):
+    command='oathtool --base32 --totp {0}'.format(mfacode)
     test=subprocess.Popen(command.split(),stdout=subprocess.PIPE)    
     out,error=test.communicate()
     if error is None:
         code=out.decode('utf-8').strip("'").split('\n')[0]
-        print(code)
         return [*code]
 class Code():
     def __init__(self,buttons):
@@ -37,13 +36,12 @@ class Code():
             
         #Todo something to acknowledge
     def set_random_code(self,source):
-#        code=[random.randint(0,9) for cc in range(6)]
-        sourceIndex=source.currentIndex()
-        code=getCodeForMFA(sourceIndex)
+        code=[random.randint(0,9) for cc in range(6)]
+    def get_code_then_set(self,source,mfa):
+        selected=source.currentText()
+        code=getCodeForMFA(mfa[selected])
         self.set_code(code)    
         
-    def get_code_then_set(self):
-        pass
 class CodeDial():
     def __init__(self):
         self.widget=QPushButton('*')
@@ -84,7 +82,7 @@ def run_app(window,mfa):
     newCodeBtn=QPushButton("GET NEW CODE")
     newCodeBtn.setStyleSheet("border-radius: 7px;border: 2px solid {0}; background-color: {1}; color:{0};".format(FONT_COLOR_PRIMARY,BUTTON_BG_COLOR))
     newCodeBtn.setFixedHeight(40)
-    newCodeBtn.clicked.connect(lambda: CODE.set_random_code(chooseSourceBtn))
+    newCodeBtn.clicked.connect(lambda: CODE.get_code_then_set(chooseSourceBtn,mfa))
     buttonLayout=QVBoxLayout()
     buttonLayout.addWidget(chooseSourceBtn)
     buttonLayout.addWidget(newCodeBtn)
@@ -109,8 +107,7 @@ if __name__ == "__main__":
     mfa=dict()
     with open(mfarc,'r') as file:
         for ll in file:
-            
-            vals=ll.split(" ")[1].strip('"').split('=')
+            vals=ll.split(" ")[1].strip('\n').strip('"').split('=')
             mfa[vals[0].split('MFA')[0]]=vals[1]
             
     
